@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  emby-router:
+    image: emby-router:latest
+    container_name: emby-router
+    # 让容器中的应用能够读取外部 .env 文件中定义的环境变量
+    ports:
+      - "9876:9876"
+    environment:
+      - NODE_ENV=production
+      - HTTP_PORT=9876
+      - REDIS_URL=redis://emby-redis:6379
+      - TELEGRAM_BOT_ID=
+      - TELEGRAM_CHAT_ID=
+      - KT_SALT=
+      - EMBY_API_URL=
+      - EMBY_API_KEY=
+      - DEFAULT_ROUTE=
+      - ROUTERS_JSON_DATA=[{"name":"真实路径转发","type":"GD","index":"gd-1","url":"https://gd-1.empy.com"},{"name":"反代1","type":"RP","index":"rp-1","url":"https://gd-1.empy.com"},{"name":"反代2-简易负载，随机分配","type":"RP","index":"rp-1","url":["https://gd-1a.empy.com","https://gd-1b.empy.com","https://gd-1c.empy.com"]}]
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: emby-redis
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

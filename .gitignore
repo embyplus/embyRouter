@@ -1,0 +1,6 @@
+.idea
+.env
+node_modules
+build
+*.log
+package-lock.json
