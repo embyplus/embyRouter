@@ -2,34 +2,38 @@ const axios = require("axios");
 const KV = require("./kv");
 
 class Emby {
-  constructor(apiUrl= "", apiKey="", enableCache = true) {
+  constructor(apiUrl = "", apiKey = "", enableCache = true) {
     this.api = new EmbyApi(apiUrl, apiKey);
     this.kv = new KV('embyApi');
+    this.enableCache = enableCache;
   }
-  async getOrFetch(cacheKey, fetchFn, cacheTil = null) {
-    // 若缓存可用则直接用
-    const cacheData = await this.kv.get(cacheKey);
-    if (cacheData) {
-      return JSON.parse(cacheData);
-    }
 
-    // 缓存未命中，调用 fetchFn
+  async getOrFetch(cacheKey, fetchFn, cacheTil = null) {
+    // 如果开启缓存就先尝试读取缓存数据
+    if (this.enableCache) {
+      const cacheData = await this.kv.get(cacheKey);
+      if (cacheData) {
+        return JSON.parse(cacheData);
+      }
+    }
+    
+    // 缓存未命中或未启用，调用 fetchFn
     const response = await fetchFn();
     // 需要根据你实际的请求结构来判断
     if (!response || response.status !== 200) {
       return null;
     }
     let cache = true;
-
-    const cacheKeyMainTitle = cacheKey.split("_")[0]
+    const cacheKeyMainTitle = cacheKey.split("_")[0];
     if (cacheKeyMainTitle === "deviceInfo") {
       if (!response.data || !response.data['LastUserId']) {
         cache = false;
       }
     }
-
-    // 写入缓存
-    cache && await this.kv.put(cacheKey, JSON.stringify(response.data), cacheTil ? { expirationTtl: cacheTil } : null);
+    // 如果开启缓存且缓存条件满足，则写入缓存
+    if (this.enableCache && cache) {
+      await this.kv.put(cacheKey, JSON.stringify(response.data), cacheTil ? { expirationTtl: cacheTil } : null);
+    }
     return response.data;
   }
 
