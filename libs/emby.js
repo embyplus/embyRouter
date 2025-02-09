@@ -18,7 +18,7 @@ class Emby {
         } catch (err) {
           console.error(`缓存数据解析失败：${err}，准备重新拉取数据`);
           // 清理失效缓存（
-          await this.kv.put(cacheKey, "", { expirationTtl: 0 });
+          await this.kv.delete(cacheKey);
         }
       }
     }
