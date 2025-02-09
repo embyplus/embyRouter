@@ -94,16 +94,40 @@ class EmbyApi {
     return path;
   }
   async get(path, auth = true) {
-    return await axios.get(this.getEmbyPath(path, auth));
+    try {
+      const result = await axios.get(this.getEmbyPath(path, auth));
+      return result;
+    } catch (error) {
+      console.error(`axios get 请求出错：${error.message}`);
+      return null;
+    }
   }
   async post(path, data) {
-    return await axios.post(this.getEmbyPath(path), data);
+    try {
+      const result = await axios.post(this.getEmbyPath(path), data);
+      return result;
+    } catch (error) {
+      console.error(`axios post 请求出错：${error.message}`);
+      return null;
+    }
   }
   async put(path, data) {
-    return await axios.put(this.getEmbyPath(path), data);
+    try {
+      const result = await axios.put(this.getEmbyPath(path), data);
+      return result;
+    } catch (error) {
+      console.error(`axios put 请求出错：${error.message}`);
+      return null;
+    }
   }
   async delete(path) {
-    return await axios.delete(this.getEmbyPath(path));
+    try {
+      const result = await axios.delete(this.getEmbyPath(path));
+      return result;
+    } catch (error) {
+      console.error(`axios delete 请求出错：${error.message}`);
+      return null;
+    }
   }
 }
 
