@@ -52,13 +52,17 @@ class Emby {
     return this.getOrFetch(
       cacheKey,
       async () => {
-        let path = `/Items/${itemId}/PlaybackInfo`;
+        const queryParams = new URLSearchParams();
         if (userId) {
-          path += `?UserId=${userId}`;
+          queryParams.set("UserId", userId);
         }
         if (mediaSourceId) {
-          path += `&MediaSourceId=${mediaSourceId}`;
+          queryParams.set("MediaSourceId", mediaSourceId);
         }
+        const queryString = queryParams.toString();
+        const path = `/Items/${itemId}/PlaybackInfo${
+          queryString ? "?" + queryString : ""
+        }`;
         return await this.api.get(path);
       },
       86400
