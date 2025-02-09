@@ -99,7 +99,7 @@ class EmbyApi {
       return url.toString();
     } catch (error) {
       console.error(`URL 拼接失败啦：${error.message}`);
-      return path;
+      throw new Error(`URL 拼接失败啦：${error.message}`);
     }
   }
 
@@ -117,7 +117,7 @@ class EmbyApi {
       console.error(
         `axios ${method.toUpperCase()} 请求出错啦：${error.message}`
       );
-      return null;
+      throw error;
     }
   }
 
