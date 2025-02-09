@@ -68,12 +68,14 @@ class Emby {
       86400
     );
   }
+
   async getDeviceInfo(deviceId) {
     const cacheKey = `deviceInfo_${deviceId}`;
     return this.getOrFetch(cacheKey, async () => {
       return await this.api.get(`/Devices/Info?Id=${deviceId}`);
     });
   }
+
   async checkApiKey(apiKey) {
     const cacheKey = `apiKey_${apiKey}`;
     return this.getOrFetch(cacheKey, async () => {
@@ -81,11 +83,13 @@ class Emby {
     });
   }
 }
+
 class EmbyApi {
   constructor(apiUrl = "", apiKey = "") {
     this.apiUrl = apiUrl || process.env.EMBY_API_URL;
     this.apiKey = apiKey || process.env.EMBY_API_KEY;
   }
+
   getEmbyPath(path, auth = true) {
     try {
       const url = new URL(path, this.apiUrl);
@@ -98,41 +102,39 @@ class EmbyApi {
       return path;
     }
   }
+
+  // 新增私有方法 _request ，统一处理 axios 请求逻辑
+  async _request(method, path, data = null, auth = true) {
+    const url = this.getEmbyPath(path, auth);
+    try {
+      const response = await axios({
+        method,
+        url,
+        data,
+      });
+      return response;
+    } catch (error) {
+      console.error(
+        `axios ${method.toUpperCase()} 请求出错啦：${error.message}`
+      );
+      return null;
+    }
+  }
+
   async get(path, auth = true) {
-    try {
-      const result = await axios.get(this.getEmbyPath(path, auth));
-      return result;
-    } catch (error) {
-      console.error(`axios get 请求出错：${error.message}`);
-      return null;
-    }
+    return this._request("get", path, null, auth);
   }
+
   async post(path, data) {
-    try {
-      const result = await axios.post(this.getEmbyPath(path), data);
-      return result;
-    } catch (error) {
-      console.error(`axios post 请求出错：${error.message}`);
-      return null;
-    }
+    return this._request("post", path, data);
   }
+
   async put(path, data) {
-    try {
-      const result = await axios.put(this.getEmbyPath(path), data);
-      return result;
-    } catch (error) {
-      console.error(`axios put 请求出错：${error.message}`);
-      return null;
-    }
+    return this._request("put", path, data);
   }
+
   async delete(path) {
-    try {
-      const result = await axios.delete(this.getEmbyPath(path));
-      return result;
-    } catch (error) {
-      console.error(`axios delete 请求出错：${error.message}`);
-      return null;
-    }
+    return this._request("delete", path);
   }
 }
 
