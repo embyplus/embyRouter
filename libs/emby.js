@@ -83,15 +83,16 @@ class EmbyApi {
     this.apiKey = apiKey || process.env.EMBY_API_KEY;
   }
   getEmbyPath(path, auth = true) {
-    path = this.apiUrl + path;
-    if (auth) {
-      if (path.includes("?")) {
-        path += "&api_key=" + this.apiKey;
-      } else {
-        path += "?api_key=" + this.apiKey;
+    try {
+      const url = new URL(path, this.apiUrl);
+      if (auth) {
+        url.searchParams.set("api_key", this.apiKey);
       }
+      return url.toString();
+    } catch (error) {
+      console.error(`URL 拼接失败啦：${error.message}`);
+      return path;
     }
-    return path;
   }
   async get(path, auth = true) {
     try {
