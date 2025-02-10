@@ -1,4 +1,4 @@
-const axios = require('axios')
+const axios = require("axios");
 
 async function telegramNotify(text) {
   if (!process.env.TELEGRAM_BOT_ID || !process.env.TELEGRAM_CHAT_ID) {
@@ -10,15 +10,13 @@ async function telegramNotify(text) {
     text,
   };
   try {
-    await axios.post(
-      url,
-      JSON.stringify(body),
-      {headers: {'Content-Type': 'application/json;charset=utf-8'}},
-    );
+    await axios.post(url, JSON.stringify(body), {
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+    });
   } catch (error) {
     console.error("telegramNotify error:", error);
   }
 }
 module.exports = {
-  telegramNotify
+  telegramNotify,
 };
